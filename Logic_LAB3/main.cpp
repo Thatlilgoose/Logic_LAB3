@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 #include <locale>
+#include <vector>
+#include <limits>
 using namespace std;
 
 
@@ -44,7 +46,7 @@ public:
         if (head == nullptr || priority > head->priority) {
             newNode->next = head;
             head = newNode;
-            cout << "Ýëåìåíò \"" << val << "\" (ïðèîðèòåò " << priority << ") äîáàâëåí.\n";
+            cout << "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ \"" << val << "\" (Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚ " << priority << ") Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½.\n";
             return;
         }
 
@@ -56,18 +58,58 @@ public:
 
         newNode->next = current->next;
         current->next = newNode;
-        cout << "Ýëåìåíò \"" << val << "\" (ïðèîðèòåò " << priority << ") äîáàâëåí.\n";
+        cout << "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ \"" << val << "\" (Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚ " << priority << ") Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½.\n";
     }
 
     
+    void change_priority(const string& val, int new_priority) {
+        if (head == nullptr) {
+            cout << "ÐžÑ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿ÑƒÑÑ‚Ð°\n";
+            return;
+        }
+        int count = 0;
+        PriorityNode* dummy = new PriorityNode("", 0);
+        dummy->next = head;
+        PriorityNode* current = dummy;
+
+        while (head != nullptr && head->info == val) {
+            PriorityNode* temp = head;
+            head = head->next;
+            delete temp;
+            count++;
+        }
+        if (head != nullptr) {
+            PriorityNode* current = head;
+            while (current->next != nullptr) {
+                if (current->next->info == val){
+                    PriorityNode* temp = current->next;
+                    current->next = temp->next;
+                    delete temp;
+                    count++;
+                }else {
+                    current = current->next;
+                }
+            }
+        }
+        if (count == 0) {
+            cout << "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ Ñ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÐµÐ¼: " << val << "Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½.";
+            return;
+        }
+
+        for (int i = 0; i < count; i++) {
+            enqueue(val, new_priority);
+        }
+        cout << "ÐžÑ‚Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¾ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²" << count << " ÐÐ¾Ð²Ñ‹Ð¹ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚" << new_priority << "\n";
+    }
+    
     void dequeue() {
         if (head == nullptr) {
-            cout << "Ïðèîðèòåòíàÿ î÷åðåäü ïóñòà!\n";
+            cout << "ÐŸÑ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð½Ð°Ñ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿ÑƒÑÑ‚Ð°!\n";
             return;
         }
 
         PriorityNode* temp = head;
-        cout << "Èçâëå÷åí ýëåìåíò: " << temp->info << " (ïðèîðèòåò: " << temp->priority << ")\n";
+        cout << "Ð˜Ð·Ð²Ð»ÐµÑ‡ÐµÐ½ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚: " << temp->info << " (Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚: " << temp->priority << ")\n";
         head = head->next;
         delete temp;
     }
@@ -75,14 +117,14 @@ public:
   
     void display() const {
         if (head == nullptr) {
-            cout << "Ïðèîðèòåòíàÿ î÷åðåäü ïóñòà.\n";
+            cout << "ÐŸÑ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð½Ð°Ñ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿ÑƒÑÑ‚Ð°.\n";
             return;
         }
 
-        cout << "\n--- Ñîäåðæèìîå ïðèîðèòåòíîé î÷åðåäè ---\n";
+        cout << "\n--- Ð¡Ð¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ðµ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð½Ð¾Ð¹ Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸ ---\n";
         PriorityNode* current = head;
         while (current != nullptr) {
-            cout << "Èìÿ: " << current->info << " | Ïðèîðèòåò: " << current->priority << "\n";
+            cout << "Ð˜Ð¼Ñ: " << current->info << " | ÐŸÑ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚: " << current->priority << "\n";
             current = current->next;
         }
         cout << "--------------------------------------\n";
@@ -116,18 +158,40 @@ public:
             tail->next = newNode;
             tail = newNode;
         }
-        cout << "Ýëåìåíò \"" << val << "\" äîáàâëåí â î÷åðåäü.\n";
+        cout << "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ \"" << val << "\" Ð´Ð¾Ð±Ð°Ð²Ð»ÐµÐ½ Ð² Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒ.\n";
     }
 
+    void find(const string& val) {
+        if (head == nullptr) {
+            cout << "ÐžÑ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿ÑƒÑÑ‚Ð°\n";
+            return;
+        }
+
+        cout << "Ð ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚Ñ‹ Ð¿Ð¾Ð¸ÑÐºÐ° Ð¿Ð¾ Ð·Ð¿Ñ€Ð¾ÑÑƒ" << val << "\n";
+        Node* current = head;
+        int count = 0;
+        int position = 1;
+        while (current != nullptr) {
+            if (current->info.find(val) != string::npos) {
+                cout << "ÐŸÐ¾Ð·Ð¸Ñ†Ð¸Ñ: " << position << " |Ð˜Ð¼Ñ: " << current->info << "\n";
+                count++;
+            }
+            current = current->next;
+            position++;
+        }
+        if (count == 0) {
+            cout << "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ c Ð½Ð°Ð·Ð²Ð°Ð½Ð¸ÐµÐ¼: " << val << " Ð½Ðµ Ð½Ð°Ð¹Ð´ÐµÐ½";
+        }
+    }
     
     void dequeue() {
         if (head == nullptr) {
-            cout << "Î÷åðåäü ïóñòà!\n";
+            cout << "ÐžÑ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿ÑƒÑÑ‚Ð°!\n";
             return;
         }
 
         Node* temp = head;
-        cout << "Èçâëå÷åí ýëåìåíò: " << temp->info << "\n";
+        cout << "Ð˜Ð·Ð²Ð»ÐµÑ‡ÐµÐ½ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚: " << temp->info << "\n";
         head = head->next;
         if (head == nullptr) {
             tail = nullptr;
@@ -138,14 +202,14 @@ public:
     
     void display() const {
         if (head == nullptr) {
-            cout << "Î÷åðåäü ïóñòà.\n";
+            cout << "ÐžÑ‡ÐµÑ€ÐµÐ´ÑŒ Ð¿ÑƒÑÑ‚Ð°.\n";
             return;
         }
 
-        cout << "\n--- Ñîäåðæèìîå î÷åðåäè (FIFO) ---\n";
+        cout << "\n--- Ð¡Ð¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ðµ Ð¾Ñ‡ÐµÑ€ÐµÐ´Ð¸ (FIFO) ---\n";
         Node* current = head;
         while (current != nullptr) {
-            cout << "Èìÿ: " << current->info << "\n";
+            cout << "Ð˜Ð¼Ñ: " << current->info << "\n";
             current = current->next;
         }
         cout << "----------------------------------\n";
@@ -173,18 +237,18 @@ public:
         Node* newNode = new Node(val);
         newNode->next = top;
         top = newNode;
-        cout << "Ýëåìåíò \"" << val << "\" ïîìåùåí â ñòåê.\n";
+        cout << "Ð­Ð»ÐµÐ¼ÐµÐ½Ñ‚ \"" << val << "\" Ð¿Ð¾Ð¼ÐµÑ‰ÐµÐ½ Ð² ÑÑ‚ÐµÐº.\n";
     }
 
     
     void pop() {
         if (top == nullptr) {
-            cout << "Ñòåê ïóñò!\n";
+            cout << "Ð¡Ñ‚ÐµÐº Ð¿ÑƒÑÑ‚!\n";
             return;
         }
 
         Node* temp = top;
-        cout << "Èçâëå÷åí ýëåìåíò: " << temp->info << "\n";
+        cout << "Ð˜Ð·Ð²Ð»ÐµÑ‡ÐµÐ½ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚: " << temp->info << "\n";
         top = top->next;
         delete temp;
     }
@@ -192,14 +256,14 @@ public:
    
     void display() const {
         if (top == nullptr) {
-            cout << "Ñòåê ïóñò.\n";
+            cout << "Ð¡Ñ‚ÐµÐº Ð¿ÑƒÑÑ‚.\n";
             return;
         }
 
-        cout << "\n--- Ñîäåðæèìîå ñòåêà (LIFO) ---\n";
+        cout << "\n--- Ð¡Ð¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ðµ ÑÑ‚ÐµÐºÐ° (LIFO) ---\n";
         Node* current = top;
         while (current != nullptr) {
-            cout << "Èìÿ: " << current->info << "\n";
+            cout << "Ð˜Ð¼Ñ: " << current->info << "\n";
             current = current->next;
         }
         cout << "-------------------------------\n";
@@ -215,32 +279,46 @@ int main() {
 
     int choice = 0;
     while (choice != 4) {
-        cout << "\n========== ÌÅÍÞ ËÀÁÎÐÀÒÎÐÍÎÉ ÐÀÁÎÒÛ ¹3 ==========\n";
-        cout << "1. Ðàáîòà ñ Ïðèîðèòåòíîé î÷åðåäüþ\n";
-        cout << "2. Ðàáîòà ñ Îáû÷íîé î÷åðåäüþ (FIFO)\n";
-        cout << "3. Ðàáîòà ñî Ñòåêîì (LIFO)\n";
-        cout << "4. Âûõîä\n";
-        cout << "Âûáåðèòå ñòðóêòóðó äàííûõ: ";
-        cin >> choice;
+        cout << "\n========== ÐœÐ•ÐÐ® Ð›ÐÐ‘ÐžÐ ÐÐ¢ÐžÐ ÐÐžÐ™ Ð ÐÐ‘ÐžÐ¢Ð« â„–3 ==========\n";
+        cout << "1. Ð Ð°Ð±Ð¾Ñ‚Ð° Ñ ÐŸÑ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð½Ð¾Ð¹ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒÑŽ\n";
+        cout << "2. Ð Ð°Ð±Ð¾Ñ‚Ð° Ñ ÐžÐ±Ñ‹Ñ‡Ð½Ð¾Ð¹ Ð¾Ñ‡ÐµÑ€ÐµÐ´ÑŒÑŽ (FIFO)\n";
+        cout << "3. Ð Ð°Ð±Ð¾Ñ‚Ð° ÑÐ¾ Ð¡Ñ‚ÐµÐºÐ¾Ð¼ (LIFO)\n";
+        cout << "4. Ð’Ñ‹Ñ…Ð¾Ð´\n";
+        cout << "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ ÑÑ‚Ñ€ÑƒÐºÑ‚ÑƒÑ€Ñƒ Ð´Ð°Ð½Ð½Ñ‹Ñ…: ";
+        if (!(cin >> choice)) {
+            cout << "Ð’Ð²ÐµÐ´ÐµÐ½Ð¾ Ð½Ðµ Ñ‡Ð¸ÑÐ»Ð¾\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        }
+        
 
         if (choice == 1) {
             int subChoice = 0;
-            while (subChoice != 4) {
-                cout << "\n--- ÏÐÈÎÐÈÒÅÒÍÀß Î×ÅÐÅÄÜ ---\n";
-                cout << "1. Äîáàâèòü ýëåìåíò ñ ïðèîðèòåòîì\n";
-                cout << "2. Èçâëå÷ü ýëåìåíò (ñ âûñøèì ïðèîðèòåòîì)\n";
-                cout << "3. Ïîêàçàòü ñîäåðæèìîå\n";
-                cout << "4. Íàçàä\n";
-                cout << "Âûáåðèòå äåéñòâèå: ";
-                cin >> subChoice;
+            while (subChoice != 5) {
+                cout << "\n--- ÐŸÐ Ð˜ÐžÐ Ð˜Ð¢Ð•Ð¢ÐÐÐ¯ ÐžÐ§Ð•Ð Ð•Ð”Ð¬ ---\n";
+                cout << "1. Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ Ñ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð¾Ð¼\n";
+                cout << "2. Ð˜Ð·Ð²Ð»ÐµÑ‡ÑŒ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ (Ñ Ð²Ñ‹ÑÑˆÐ¸Ð¼ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚Ð¾Ð¼)\n";
+                cout << "3. ÐŸÐ¾ÐºÐ°Ð·Ð°Ñ‚ÑŒ ÑÐ¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ðµ\n";
+                cout << "4. Ð ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ñ‚ÑŒ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚\n";
+                cout << "5. ÐÐ°Ð·Ð°Ð´\n";
+                cout << "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ: ";
+                if (!(cin >> subChoice)) {
+                    cout << "Ð’Ð²ÐµÐ´ÐµÐ½Ð¾ Ð½Ðµ Ñ‡Ð¸ÑÐ»Ð¾\n";
+                    cin.clear();
+                    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                }
 
                 if (subChoice == 1) {
                     string name;
                     int prio;
-                    cout << "Ââåäèòå íàçâàíèå îáúåêòà: ";
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°: ";
                     cin >> name;
-                    cout << "Ââåäèòå ïðèîðèòåò (öåëîå ÷èñëî): ";
-                    cin >> prio;
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚ (Ñ†ÐµÐ»Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾): ";
+                    if (!(cin >> prio)) {
+                        cout << "Ð’Ð²ÐµÐ´ÐµÐ½Ð¾ Ð½Ðµ Ñ‡Ð¸ÑÐ»Ð¾\n";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
                     pQueue.enqueue(name, prio);
                 }
                 else if (subChoice == 2) {
@@ -249,22 +327,36 @@ int main() {
                 else if (subChoice == 3) {
                     pQueue.display();
                 }
+                else if (subChoice == 4) {
+                    string name;
+                    int new_prio;
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°: ";
+                    cin >> name;
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð¾Ð²Ñ‹Ð¹ Ð¿Ñ€Ð¸Ð¾Ñ€Ð¸Ñ‚ÐµÑ‚ (Ñ†ÐµÐ»Ð¾Ðµ Ñ‡Ð¸ÑÐ»Ð¾): ";
+                    if (!(cin >> new_prio)) {
+                        cout << "Ð’Ð²ÐµÐ´ÐµÐ½Ð¾ Ð½Ðµ Ñ‡Ð¸ÑÐ»Ð¾\n";
+                        cin.clear();
+                        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                    }
+                    pQueue.change_priority(name, new_prio);
+                }
             }
         }
         else if (choice == 2) {
             int subChoice = 0;
-            while (subChoice != 4) {
-                cout << "\n--- ÎÁÛ×ÍÀß Î×ÅÐÅÄÜ (FIFO) ---\n";
-                cout << "1. Äîáàâèòü ýëåìåíò (Enqueue)\n";
-                cout << "2. Èçâëå÷ü ýëåìåíò (Dequeue)\n";
-                cout << "3. Ïîêàçàòü ñîäåðæèìîå\n";
-                cout << "4. Íàçàä\n";
-                cout << "Âûáåðèòå äåéñòâèå: ";
+            while (subChoice != 5) {
+                cout << "\n--- ÐžÐ‘Ð«Ð§ÐÐÐ¯ ÐžÐ§Ð•Ð Ð•Ð”Ð¬ (FIFO) ---\n";
+                cout << "1. Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ (Enqueue)\n";
+                cout << "2. Ð˜Ð·Ð²Ð»ÐµÑ‡ÑŒ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ (Dequeue)\n";
+                cout << "3. ÐŸÐ¾ÐºÐ°Ð·Ð°Ñ‚ÑŒ ÑÐ¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ðµ\n";
+                cout << "4. ÐÐ°Ð¹Ñ‚Ð¸ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚\n";
+                cout << "5. ÐÐ°Ð·Ð°Ð´\n";
+                cout << "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ: ";
                 cin >> subChoice;
 
                 if (subChoice == 1) {
                     string name;
-                    cout << "Ââåäèòå íàçâàíèå îáúåêòà: ";
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°: ";
                     cin >> name;
                     queue.enqueue(name);
                 }
@@ -274,22 +366,29 @@ int main() {
                 else if (subChoice == 3) {
                     queue.display();
                 }
+                else if (subChoice == 4) {
+                    string name;
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð¸Ð¼Ñ: ";
+                    cin >> name;
+                    queue.find(name);
+                    
+                }
             }
         }
         else if (choice == 3) {
             int subChoice = 0;
             while (subChoice != 4) {
-                cout << "\n--- ÑÒÅÊ (LIFO) ---\n";
-                cout << "1. Ïîìåñòèòü ýëåìåíò (Push)\n";
-                cout << "2. Èçâëå÷ü ýëåìåíò (Pop)\n";
-                cout << "3. Ïîêàçàòü ñîäåðæèìîå\n";
-                cout << "4. Íàçàä\n";
-                cout << "Âûáåðèòå äåéñòâèå: ";
+                cout << "\n--- Ð¡Ð¢Ð•Ðš (LIFO) ---\n";
+                cout << "1. ÐŸÐ¾Ð¼ÐµÑÑ‚Ð¸Ñ‚ÑŒ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ (Push)\n";
+                cout << "2. Ð˜Ð·Ð²Ð»ÐµÑ‡ÑŒ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚ (Pop)\n";
+                cout << "3. ÐŸÐ¾ÐºÐ°Ð·Ð°Ñ‚ÑŒ ÑÐ¾Ð´ÐµÑ€Ð¶Ð¸Ð¼Ð¾Ðµ\n";
+                cout << "4. ÐÐ°Ð·Ð°Ð´\n";
+                cout << "Ð’Ñ‹Ð±ÐµÑ€Ð¸Ñ‚Ðµ Ð´ÐµÐ¹ÑÑ‚Ð²Ð¸Ðµ: ";
                 cin >> subChoice;
 
                 if (subChoice == 1) {
                     string name;
-                    cout << "Ââåäèòå íàçâàíèå îáúåêòà: ";
+                    cout << "Ð’Ð²ÐµÐ´Ð¸Ñ‚Ðµ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ Ð¾Ð±ÑŠÐµÐºÑ‚Ð°: ";
                     cin >> name;
                     stack.push(name);
                 }
@@ -299,10 +398,14 @@ int main() {
                 else if (subChoice == 3) {
                     stack.display();
                 }
+                
             }
         }
+        
     }
 
-    cout << "Ïðîãðàììà çàâåðøåíà.\n";
+    cout << "ÐŸÑ€Ð¾Ð³Ñ€Ð°Ð¼Ð¼Ð° Ð·Ð°Ð²ÐµÑ€ÑˆÐµÐ½Ð°.\n";
     return 0;
 }
+
+
